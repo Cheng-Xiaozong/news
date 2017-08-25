@@ -1,0 +1,79 @@
+@charset "UTF-8";
+/**
+ * 
+ * @authors Your Name (you@example.org)
+ * @date    2016-08-22 15:35:00
+ * @version $Id$
+ */
+body{
+  background:url(../i/bg.jpg) no-repeat;
+    background-size:cover;
+    background-position:left center;
+}
+h1{
+    font-weight: normal;
+    font-size: 28px;
+    text-align: center;
+    color:#fff;
+       height: 80px;
+    line-height: 50px;
+}
+h1 span{
+    font-weight: bold;
+
+    color:#0e90d2;
+}
+.main_part{
+    margin:25% auto auto;
+}
+input{
+    padding-left: 1em !important;
+    color:rgba(255,255,255,.6) !important;
+    background:rgba(43,63,96,.75) !important;
+    border:none !important;
+    border-bottom:1px solid #ccc !important;
+}
+input:last-child{
+    border:none !important;
+}
+.am-form-set>input:focus {
+     z-index: 0; 
+}
+.am-form-set {
+    margin-bottom: 1.5rem !important;
+}
+.am-alert-danger{
+    position: fixed;
+    width: 100%;
+    top:-46px;
+    left: 0;
+}
+.rm{
+    top:0px !important;
+}
+
+fieldset p{
+    color: #ccc;
+    font-size: 14px;
+    height: 8px;
+    line-height: 8px;
+}
+.am-alert>:last-child {
+    margin-bottom: 0;
+    text-align: center;
+}
+@media(max-width: 680px){
+    .main_part{
+    margin:50% auto auto;
+}
+}
+@media(min-width: 680px){
+    .main_part{
+    margin:30% auto auto;
+}
+}
+@media(min-width: 1200px){
+    .main_part{
+    margin:20% auto auto;
+}
+}
