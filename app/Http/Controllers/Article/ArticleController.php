@@ -33,7 +33,7 @@ class ArticleController extends Controller
         {
             $this->verificationData($request);
             $data=$request->input('article');
-            $data['face'] = empty($request->file('face')) ? '' : $this->upArticleFace($request->file('face'));
+            $data['face'] = empty($request->file('face'))||is_null($this->upArticleFace($request->file('face'))) ? '' : $this->upArticleFace($request->file('face'));
            /* $data['tag']=implode(",",$data['tag']);*/
             if($this->Article::create($data))
             {
