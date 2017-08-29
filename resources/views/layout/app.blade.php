@@ -58,12 +58,23 @@
             <ul class="am-list admin-sidebar-list" id="collapase-nav">
                 <li><a href="{{url('/')}}"><span class="am-icon-home"></span> 首页</a></li>
                 <li class="admin-parent">
-                    <a class="am-cf" data-am-collapse="{parent: '#collapase-nav', target: '#user-nav'}"><span class="am-icon-file"></span> 文章管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-                    <ul class="click-active am-list am-collapse admin-sidebar-sub am-in" id="user-nav">
+                    <a class="am-cf" data-am-collapse="{parent: '#collapase-nav', target: '#article-nav'}"><span class="am-icon-file"></span> 文章管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+                    <ul class="click-active am-list am-collapse admin-sidebar-sub am-in" id="article-nav">
                         <li><a data-href="{{url('/article')}}" class="am-cf"><span class="am-icon-th-list"></span> 文章管理</a></li>
                         <li><a data-href="{{url('/article/create')}}"><span class="am-icon-edit"></span> 发表文章</a></li>
                         <li><a data-href="{{url('/article/type')}}"><span class="am-icon-calendar"></span> 分类管理</a></li>
                         <li><a data-href="{{url('/article/createType')}}"><span class="am-icon-th"></span> 新增分类</a></li>
+                    </ul>
+                </li>
+                <li class="admin-parent">
+                    <a class="am-cf am-collapsed" data-am-collapse="{parent: '#collapase-nav', target: '#push-nav'}"><span class="am-icon-cloud-upload"></span> 推送管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+                    <ul class="click-active am-list am-collapse admin-sidebar-sub am-collapse" id="push-nav">
+                        <li><a data-href="{{url('/push')}}"><span class="am-icon-calendar"></span>推送管理</a></li>
+                        <li><a data-href="{{url('/push/articleType')}}" class="am-cf"><span class="am-icon-th-list"></span>分类管理</a></li>
+                        <li><a data-href="{{url('/push/addArticleType')}}"><span class="am-icon-edit"></span>新增分类</a></li>
+                        <li><a data-href="{{url('/push/appList')}}"><span class="am-icon-th"></span>终端管理</a></li>
+                        <li><a data-href="{{url('/push/createApp')}}"><span class="am-icon-edit"></span>新增终端</a></li>
+
                     </ul>
                 </li>
                 <li><a href="{{url('/logout')}}"><span class="am-icon-sign-out"></span> 注销</a></li>

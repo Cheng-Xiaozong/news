@@ -98,6 +98,7 @@ class ArticleService
         }
         return $articleType->save();
     }
+
     //文章分类列表
     public static function articleTypeList()
     {

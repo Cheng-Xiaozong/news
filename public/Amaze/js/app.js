@@ -46,9 +46,51 @@ $('.article-type-select').on('change',function(){
     }
 })
 
+//分类筛选
+$('.push-article-type-select').on('change',function(){
+    var value= $(this).val();
+    var url =  $(this).attr('data-href')+'/'+ value;
+    var indexUrl =  $(this).attr('data-index-href');
+    if(value =='null'){
+        window.location.href=indexUrl;
+    }else {
+        window.location.href=url;
+    }
+})
+
+
+//推送文章分类状态编辑
+$('.button-push-article-type-status').on('click',function(){
+    var pid =  $('.push-article-type-select').val();
+    var url =  $(this).attr('data-href')+'/'+pid;
+    window.location.href=url;
+})
+
+//推送文章分类编辑
+$('.button-push-article-type-edit').on('click',function(){
+    var url =  $(this).attr('data-href');
+    window.location.href=url;
+})
+
+//推送文章分类删除
+$('.button-push-article-type-delete').on('click',function(){
+    var pid =  $('.push-article-type-select').val();
+    var url =  $(this).attr('data-href');
+    window.location.href=url+'/'+pid;
+})
+
+
+
 //搜索
 $('.article-search').on('click',function(){
     var url =  $(this).attr('data-href');
     var content = $('.article-search-content').val();
     window.location.href=url+'/'+content;
+})
+
+
+//分类筛选
+$('.add-push-article-type-select').on('change',function(){
+   var path = $(this).find('option:selected').attr('data-path');
+   $('.article-type-path').val(path);
 })

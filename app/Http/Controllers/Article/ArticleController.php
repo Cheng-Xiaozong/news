@@ -38,7 +38,7 @@ class ArticleController extends Controller
             if($this->Article::create($data))
             {
                 return redirect('/article')->with('success','发表成功！');
-            }else{
+
                 return redirect()->back()->with('error','发表失败！');
             }
         }

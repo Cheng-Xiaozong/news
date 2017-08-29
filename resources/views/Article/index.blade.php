@@ -13,7 +13,7 @@
                 <select data-am-selected="{btnSize: 'sm'}" class="article-type-select" data-href="{{url('/article/typeSelect')}}" data-index-href="{{url('/article')}}">
                     <option value="null">请选择分类</option>
                     @foreach($articleTypeList as $articleType)
-                        <option value="{{$articleType->id}}" @if( substr(Request::getPathInfo('type_id'),-1) == $articleType->id) selected @endif>{{$articleType->name}}</option>
+                        <option value="{{$articleType->id}}" @if(explode('/',Request::getPathInfo())[count(explode('/',Request::getPathInfo()))-1] == $articleType->id) selected @endif>{{$articleType->name}}</option>
                     @endforeach
                 </select>
             </div>
