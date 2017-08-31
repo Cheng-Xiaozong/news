@@ -30,6 +30,19 @@ class ArticleService
         return Article::find($id);
     }
 
+    //查找文章
+    public static function getArticleByIds($ids)
+    {
+        return Article::whereIn('id',$ids)->paginate(Article::ARTICLE_PAGE_NUM);
+    }
+
+    //查找启用文章
+    public static function getEnableArticleById($id)
+    {
+        return Article::whereRaw('id = ? and status = ?',[$id,Article::ARTICLE_STATUS_ENABLE])->get();
+    }
+
+
     //编辑状态
     public static function editStatus($id)
     {

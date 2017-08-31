@@ -26,7 +26,6 @@
                     <label for="doc-vld-name-2">终端名称：</label>
                     <input type="text" id="doc-vld-name-2" minlength="2" maxlength="10" placeholder="输入终端名称（2-10个字符）" name="app[name]" value="{{old('app')['name'] ?? $app->name}}" required/>
                 </div>
-
                 <div class="am-form-group">
                     <label>终端状态： </label>
                     <label class="am-radio-inline">

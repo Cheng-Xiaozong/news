@@ -32,6 +32,14 @@ Route::group(['middleware'=>['auth']],function(){
     Route::any('/article/editType/{id}', 'Article\ArticleController@editType');
     Route::get('/article/deleteType/{id}', 'Article\ArticleController@deleteType');
     Route::any('/article/createType', 'Article\ArticleController@createType');
+
+    Route::get('/push', 'Push\PushController@push');
+    Route::any('/push/create', 'Push\PushController@create');
+    Route::any('/push/delete/{id}', 'Push\PushController@delete');
+    Route::get('/push/editStatus/{id}', 'Push\PushController@editStatus');
+    Route::get('/push/editHotStatus/{id}', 'Push\PushController@editHotStatus');
+    Route::get('/push/editRecommendStatus/{id}', 'Push\PushController@editRecommendStatus');
+
     Route::get('/push/articleType', 'Push\PushController@articleType');
     Route::get('/push/articleTypeSelect/{id}', 'Push\PushController@articleTypeSelect');
     Route::get('/push/searchType/{content}', 'Push\PushController@searchType');
@@ -39,9 +47,12 @@ Route::group(['middleware'=>['auth']],function(){
     Route::get('/push/editArticleTypeStatus/{id}/{pid}', 'Push\PushController@editArticleTypeStatus');
     Route::get('/push/deleteArticleType/{id}/{pid}', 'Push\PushController@deleteArticleType');
     Route::any('/push/addArticleType', 'Push\PushController@addArticleType');
+
     Route::get('/push/appList', 'Push\PushController@appList');
     Route::any('/push/createApp', 'Push\PushController@createApp');
     Route::any('/push/deleteApp/{id}', 'Push\PushController@deleteApp');
     Route::any('/push/editApp/{id}', 'Push\PushController@editApp');
     Route::any('/push/editAppStatus/{id}', 'Push\PushController@editAppStatus');
+
+
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Push;
 
+use App\Service\ArticleService;
 use App\Service\PushService;
 use Illuminate\Http\Request;
 
@@ -10,43 +11,44 @@ use App\Http\Controllers\Controller;
 
 class PushController extends Controller
 {
-
     protected $Push;
-    public function __construct(PushService $push)
+    protected $Article;
+    public function __construct(PushService $push,ArticleService $article)
     {
         $this->Push=$push;
+        $this->Article=$article;
     }
 
     //首页
     public function articleType()
     {
         $result = $this->Push::pushArticleTypeList();
-        $data['types']=$this->getSubs($result);
+        $data['types']=$this->Push::getSubs($result);
         $data['typeList']=$this->Push::typeList();
-        return view('Push.index',$data);
+        return view('Push.articleType',$data);
     }
 
     //分类筛选
     public function articleTypeSelect($id)
     {
         $result = $this->Push::pushArticleTypeList();
-        $data['types']=$this->getSubs($result);
+        $data['types']=$this->Push::getSubs($result);
         if($id=='null')
         {
             $data['typeList']=$this->Push::typeList();
         }else{
-            $data['typeList']=$this->arrayToObject($this->getSubs($result,$id));
+            $data['typeList']=$this->Push::arrayToObject($this->Push::getSubs($result,$id));
         }
-        return view('Push.index',$data);
+        return view('Push.articleType',$data);
     }
 
     //搜索分类
     public function searchType($content)
     {
         $result = $this->Push::pushArticleTypeList();
-        $data['types']=$this->getSubs($result);
+        $data['types']=$this->Push::getSubs($result);
         $data['typeList']=$this->Push::searchType($content);
-        return view('Push.index',$data);
+        return view('Push.articleType',$data);
     }
 
     //编辑分类
@@ -71,7 +73,7 @@ class PushController extends Controller
     public function deleteArticleType($id,$pid)
     {
         $types = $this->Push::pushArticleTypeList();
-        if($this->sonNum($types,$id)!=0)
+        if($this->Push::sonNum($types,$id)!=0)
         {
             return redirect('/push/articleTypeSelect/'.$pid)->with('error','该分类下有子分类，不能删除！');
         }
@@ -101,8 +103,7 @@ class PushController extends Controller
                 return redirect()->back()->with('error','新增失败！');
             }
         }
-        $result = $this->Push::pushArticleTypeList();
-        $data['types']=$this->getSubs($result);
+        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
         return view('Push.addArticleType',$data);
     }
 
@@ -143,81 +144,6 @@ class PushController extends Controller
         }else{
             return redirect('/push/articleTypeSelect/'.$pid)->with('error','操作失败！');
         }
-    }
-
-
-    //获取某分类的直接子分类
-    public function getSons($categorys,$id=0){
-        $sons=array();
-        foreach($categorys as $item){
-            if($item['pid']==$id)
-                $sons[]=$item;
-        }
-        return $sons;
-    }
-
-    //获取某个分类的所有子分类
-    public function getSubs($categorys,$id=0,$level=1){
-        $subs=array();
-        foreach($categorys as $item){
-            if($item['pid']==$id){
-                $item['level']=$level;
-                $item['sonNum']=$this->sonNum($categorys,$item['id']);
-                $subs[]=$item;
-                $subs=array_merge($subs,$this->getSubs($categorys,$item['id'],$level+1));
-            }
-
-        }
-        return $subs;
-    }
-
-    //获取某个分类的所有父分类
-    public function getParents($categorys,$id){
-        $tree=array();
-        foreach($categorys as $item){
-            if($item['id']==$id){
-                if($item['pid']>0)
-                    $tree=array_merge($tree,$this->getParents($categorys,$item['pid']));
-                $tree[]=$item;
-                break;
-            }
-        }
-        return $tree;
-    }
-
-    //判断某个类下面子分类的数量
-    public function sonNum($array,$id=0)
-    {
-        return count($this->getSubs($array,$id));
-    }
-
-    //数组转对象
-    public function arrayToObject($arr) {
-        if (gettype($arr) != 'array') {
-            return;
-        }
-        foreach ($arr as $k => $v) {
-            if (gettype($v) == 'array' || getType($v) == 'object') {
-                $arr[$k] = (object)$this->arrayToObject($v);
-            }
-        }
-
-        return (object)$arr;
-    }
-
-    //对象转数组
-    public function objectToArray($obj)
-    {
-        $obj = (array)$obj;
-        foreach ($obj as $k => $v) {
-            if (gettype($v) == 'resource') {
-                return;
-            }
-            if (gettype($v) == 'object' || gettype($v) == 'array') {
-                $obj[$k] = (array)$this->objectToArray($v);
-            }
-        }
-        return $obj;
     }
 
     //终端列表
@@ -298,6 +224,119 @@ class PushController extends Controller
             'app.name' => '终端名称',
             'app.status' => '终端状态',
         ]);
+    }
+
+   /* //推送管理
+    public function push()
+    {
+        $appList=$this->Push::appList();
+        foreach ($appList as $key=>$val)
+        {
+            $val->pushArticles=$this->Push::getArticlesByAppId($val->id);
+            $pushArticleIds=[];
+            foreach ($val->pushArticles as $pushArticle)
+            {
+                $pushArticleIds[]= $pushArticle->article_id;
+            }
+            $val->Articles=$this->Article::getArticleByIds($pushArticleIds);
+        }
+        $data['appList']=$appList;
+        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        return view('Push.index',$data);
+    }*/
+
+     //推送管理
+     public function push($app_id=null,$type_id=null)
+     {
+         $data['articlePushList']=$this->selectPushData($app_id,$type_id);
+         $data['appList']=$this->Push::appLists();
+         $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+         return view('Push.index',$data);
+     }
+
+     //根据条件筛选数据
+     public function selectPushData($app_id,$type_id)
+     {
+         $pushArticles=$this->Push::selectPushData($app_id,$type_id);
+         foreach ($pushArticles as $pushArticle)
+         {
+             $pushArticle->articleInfo= $this->Article::getArticleById($pushArticle->article_id);
+         }
+         return $pushArticles;
+     }
+
+     //推送文章
+     public function create(Request $request)
+     {
+         $articleId=$request->input('article_id');
+         $typeId=$request->input('type_id');
+         $apps=$request->input('app');
+         $pushArticles=$this->Push::getSelectedById($articleId);
+         $ids=[];
+         foreach ($pushArticles as $pushArticle)
+         {
+             $ids[]=$pushArticle->id;
+         }
+         $this->Push::deletePushArticle($ids);
+         foreach ($apps as $k=>$v)
+         {
+             $data['article_id']=$articleId;
+             $data['type_id']=$typeId;
+             $data['app_id']=$v;
+             $result[$k]=$this->Push::addPushArticle($data);
+             if(empty($result[$k])){
+                 return redirect()->back()->with('error','推送失败！');
+             }
+         }
+         return redirect('/article')->with('success','推送成功，请至【推送管理】中进行管理！');
+     }
+
+     //---------------------------------
+
+    //删除推送
+    public function delete($id)
+    {
+        $result=$this->Push::delete($id);
+        if($result)
+        {
+            return redirect('/push')->with('success','删除成功！');
+        }else{
+            return redirect('/push')->with('error','删除失败！');
+        }
+    }
+
+
+    //编辑推送状态
+    public function editStatus($id)
+    {
+        if($this->Push::editStatus($id))
+        {
+            return redirect('/push')->with('success','操作成功！');
+        }else{
+            return redirect('/push')->with('error','操作失败！');
+        }
+    }
+
+    //编辑推送是否热门
+    public function editHotStatus($id)
+    {
+        if($this->Push::editHotStatus($id))
+        {
+            return redirect('/push')->with('success','操作成功！');
+        }else{
+            return redirect('/push')->with('error','操作失败！');
+        }
+    }
+
+    //编辑推送是否推荐
+    public function editRecommendStatus($id)
+    {
+        if($this->Push::editRecommendStatus($id))
+        {
+            return redirect('/push')->with('success','操作成功！');
+        }else{
+            return redirect('/push')->with('error','操作失败！');
+        }
     }
 
 

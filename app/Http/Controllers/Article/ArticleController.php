@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Article;
 
 use App\Service\ArticleService;
+use App\Service\PushService;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -12,10 +13,12 @@ use Illuminate\Support\Facades\Storage;
 class ArticleController extends Controller
 {
     protected $Article;
+    protected $Push;
 
-    public function __construct(ArticleService $article)
+    public function __construct(ArticleService $article,PushService $push)
     {
         $this->Article=$article;
+        $this->Push=$push;
     }
 
     //首页
@@ -23,6 +26,8 @@ class ArticleController extends Controller
     {
         $data['articleList']=$this->Article::articleList();
         $data['articleTypeList']=$this->Article::articleTypeList();
+        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        $data['appList']=$this->Push::appList();
         return view('Article.index',$data);
     }
 
@@ -35,10 +40,9 @@ class ArticleController extends Controller
             $data=$request->input('article');
             $data['face'] = empty($request->file('face'))||is_null($this->upArticleFace($request->file('face'))) ? '' : $this->upArticleFace($request->file('face'));
            /* $data['tag']=implode(",",$data['tag']);*/
-            if($this->Article::create($data))
-            {
-                return redirect('/article')->with('success','发表成功！');
-
+            if($this->Article::create($data)) {
+                return redirect('/article')->with('success', '发表成功！');
+            }else{
                 return redirect()->back()->with('error','发表失败！');
             }
         }
@@ -77,6 +81,8 @@ class ArticleController extends Controller
     {
         $data['articleList']=$this->Article::typeSelect($type_id);
         $data['articleTypeList']=$this->Article::articleTypeList();
+        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        $data['appList']=$this->Push::appList();
         return view('Article.index',$data);
     }
 
@@ -85,6 +91,8 @@ class ArticleController extends Controller
     {
         $data['articleList']=$this->Article::search($content);
         $data['articleTypeList']=$this->Article::articleTypeList();
+        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        $data['appList']=$this->Push::appList();
         return view('Article.index',$data);
     }
 

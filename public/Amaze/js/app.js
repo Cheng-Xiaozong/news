@@ -58,7 +58,6 @@ $('.push-article-type-select').on('change',function(){
     }
 })
 
-
 //推送文章分类状态编辑
 $('.button-push-article-type-status').on('click',function(){
     var pid =  $('.push-article-type-select').val();
@@ -94,3 +93,10 @@ $('.add-push-article-type-select').on('change',function(){
    var path = $(this).find('option:selected').attr('data-path');
    $('.article-type-path').val(path);
 })
+
+//表单提交
+$('.push-article-id').on('click',function(){
+    $article_id=$(this).attr('data-id');
+    $('.article-id').val($article_id);
+})
+

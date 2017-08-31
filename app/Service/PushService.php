@@ -7,6 +7,7 @@
  */
 namespace App\Service;
 use App\App;
+use App\PushArticle;
 use App\PushArticleType;
 
 class PushService
@@ -110,6 +111,12 @@ class PushService
         return App::paginate(App::APP_PAGE_NUM);
     }
 
+    //终端列表不带分页
+    public static function appLists()
+    {
+        return App::all();
+    }
+
     //终端列表
     public static function appEnableList()
     {
@@ -122,10 +129,172 @@ class PushService
         return App::find($id);
     }
 
+    //获取某分类的直接子分类
+    public static function getSons($typeList,$id=0){
+        $sons=array();
+        foreach($typeList as $item){
+            if($item['pid']==$id)
+                $sons[]=$item;
+        }
+        return $sons;
+    }
+
+    //获取某个分类的所有子分类
+    public static function getSubs($typeList,$id=0,$level=1){
+        $subs=array();
+        foreach($typeList as $item){
+            if($item['pid']==$id){
+                $item['level']=$level;
+                $item['sonNum']=self::sonNum($typeList,$item['id']);
+                $subs[]=$item;
+                $subs=array_merge($subs,self::getSubs($typeList,$item['id'],$level+1));
+            }
+
+        }
+        return $subs;
+    }
+
+    //获取某个分类的所有父分类
+    public static function getParents($typeList,$id){
+        $tree=array();
+        foreach($typeList as $item){
+            if($item['id']==$id){
+                if($item['pid']>0)
+                    $tree=array_merge($tree,self::getParents($typeList,$item['pid']));
+                $tree[]=$item;
+                break;
+            }
+        }
+        return $tree;
+    }
+
+    //判断某个类下面子分类的数量
+    public static function sonNum($array,$id=0)
+    {
+        return count(self::getSubs($array,$id));
+    }
+
+    //数组转对象
+    public static function arrayToObject($arr) {
+        if (gettype($arr) != 'array') {
+            return;
+        }
+        foreach ($arr as $k => $v) {
+            if (gettype($v) == 'array' || getType($v) == 'object') {
+                $arr[$k] = (object)self::arrayToObject($v);
+            }
+        }
+
+        return (object)$arr;
+    }
+
+    //对象转数组
+    public static function objectToArray($obj)
+    {
+        $obj = (array)$obj;
+        foreach ($obj as $k => $v) {
+            if (gettype($v) == 'resource') {
+                return;
+            }
+            if (gettype($v) == 'object' || gettype($v) == 'array') {
+                $obj[$k] = (array)self::objectToArray($v);
+            }
+        }
+        return $obj;
+    }
+
+    //添加推送文章
+    public static function addPushArticle($data)
+    {
+        return PushArticle::create($data);
+    }
+
+    //根据文章ID查询当前状态
+    public static function getSelectedById($id)
+    {
+        return PushArticle::where('article_id','=',$id)->get();
+    }
+
+    //删除推送记录
+    public static function deletePushArticle($data)
+    {
+        return PushArticle::destroy($data);
+    }
+
+    //根据推送ID查询文章
+    public static function getArticlesByAppId($app_id)
+    {
+        return PushArticle::where('app_id','=',$app_id)->get();
+    }
+
+    //筛选推送文章
+    public static function selectPushData($app_id,$type_id)
+    {
+        if(is_null($app_id) && is_null($type_id))
+        {
+            return PushArticle::paginate(PushArticle::PAGE_NUM);
+        }
+
+        if(!is_null($app_id) && !is_null($type_id))
+        {
+            return PushArticle::whereRaw('app_id = ? and type_id = ?',[$app_id,$type_id])->paginate(PushArticle::PAGE_NUM);
+        }
+
+        if(!is_null($app_id))
+        {
+            return PushArticle::where('app_id','=',$app_id)->paginate(PushArticle::PAGE_NUM);
+        }
+
+        if(!is_null($type_id))
+        {
+            return PushArticle::where('type_id','=',$type_id)->paginate(PushArticle::PAGE_NUM);
+        }
+    }
+
+    //删除推送
+    public static function delete($id)
+    {
+        return PushArticle::destroy($id);
+    }
 
 
+    //编辑推送状态
+    public static function editStatus($id)
+    {
+        $push = PushArticle::find($id);
+        if($push->status == PushArticle::STATUS_ENABLE)
+        {
+            $push->status = PushArticle::STATUS_DISABLE;
+        }else{
+            $push->status = PushArticle::STATUS_ENABLE;
+        }
+        return $push->save();
+    }
 
+    //编辑推送是否热门
+    public static function editHotStatus($id)
+    {
+        $push = PushArticle::find($id);
+        if($push->is_hot == PushArticle::STATUS_ENABLE)
+        {
+            $push->is_hot = PushArticle::STATUS_DISABLE;
+        }else{
+            $push->is_hot = PushArticle::STATUS_ENABLE;
+        }
+        return $push->save();
+    }
 
-
+    //编辑推送是否推荐
+    public static function editRecommendStatus($id)
+    {
+        $push = PushArticle::find($id);
+        if($push->is_recommend == PushArticle::STATUS_ENABLE)
+        {
+            $push->is_recommend = PushArticle::STATUS_DISABLE;
+        }else{
+            $push->is_recommend = PushArticle::STATUS_ENABLE;
+        }
+        return $push->save();
+    }
 
 }
