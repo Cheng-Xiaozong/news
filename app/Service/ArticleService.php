@@ -9,9 +9,9 @@ namespace App\Service;
 
 use App\ArcitleType;
 use App\Article;
-
 class ArticleService
 {
+
     //文章列表
     public static function articleList()
     {
@@ -129,4 +129,34 @@ class ArticleService
     {
         return ArcitleType::find($id);
     }
+
+    //获取文章列表API
+    public static function newsGetArticlesApi($ids)
+    {
+        $articles=Article::whereIn('id',$ids)->select('id','title','face','excerpt','created_at','hits','source')->get()->toArray();
+        foreach ($articles as $key=>$article)
+        {
+            $filePath=$_SERVER['DOCUMENT_ROOT'].'/app/ArticleFace/'.$article['face'];
+            if(file_exists($filePath) && !empty($article['face']))
+            {
+                $articles[$key]['thumb']['md5']=md5_file($filePath);
+                $articles[$key]['thumb']['url']=$_SERVER['HTTP_HOST'].'/app/ArticleFace/'.$article['face'];
+            }else{
+                $articles[$key]['thumb']=null;
+            }
+        }
+        return $articles;
+    }
+
+    //获取文章内容API
+     public static function newsGetArticleContentApi($id)
+     {
+         $article=Article::find($id);
+         if($article){
+             $article->increment('hits');
+             return $article->content;
+         }else{
+             return false;
+         }
+     }
 }

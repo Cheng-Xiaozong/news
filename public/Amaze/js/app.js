@@ -100,3 +100,25 @@ $('.push-article-id').on('click',function(){
     $('.article-id').val($article_id);
 })
 
+//推送文章筛选
+$('.select-push').on('change',function(){
+    var app_id = $("[name='app-type']").val();
+    var type_id = $("[name='article-type']").val();
+    var url = $(this).attr('data-href')+"?";
+    if(app_id=='null' && type_id=='null')
+    {
+        window.location.href=url;
+    }
+
+    if(app_id!='null')
+    {
+       url+='app_id='+app_id;
+    }
+
+    if(type_id!='null')
+    {
+        url+='&type_id='+type_id;
+    }
+    window.location.href=url;
+})
+

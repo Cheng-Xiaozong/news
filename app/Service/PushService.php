@@ -18,6 +18,13 @@ class PushService
         return PushArticleType::all()->toArray();
     }
 
+    //文章分类列表（推送）
+    public static function pushEnabledArticleTypeList()
+    {
+        return PushArticleType::where('status','=','0')->get()->toArray();
+    }
+
+
     //文章分类列表（顶级分类）
     public static function typeList()
     {
@@ -59,6 +66,12 @@ class PushService
     public static function deleteArticleType($id)
     {
         return PushArticleType::destroy($id);
+    }
+
+    //查询推送的文章是否分类
+    public static function getPushArticleType($id)
+    {
+        return PushArticle::where('type_id','=',$id)->get();
     }
 
     //新增文章分类
@@ -129,6 +142,12 @@ class PushService
         return App::find($id);
     }
 
+    //查找启用的终端
+    public static function getEnabledAppById($id)
+    {
+        return App::whereRaw('status = 0 and id = ?',[$id])->get();
+    }
+
     //获取某分类的直接子分类
     public static function getSons($typeList,$id=0){
         $sons=array();
@@ -174,6 +193,18 @@ class PushService
         return count(self::getSubs($array,$id));
     }
 
+    //获取多维数组
+    public static function getArrays($typeList, $name = 'child', $pid = 0){
+        $arr = array();
+        foreach ($typeList as $v) {
+            if ($v['pid'] == $pid) {
+                $v[$name] = self::getArrays($typeList, $name, $v['id']);
+                $arr[] = $v;
+            }
+        }
+        return $arr;
+    }
+
     //数组转对象
     public static function arrayToObject($arr) {
         if (gettype($arr) != 'array') {
@@ -184,7 +215,6 @@ class PushService
                 $arr[$k] = (object)self::arrayToObject($v);
             }
         }
-
         return (object)$arr;
     }
 
@@ -297,4 +327,22 @@ class PushService
         return $push->save();
     }
 
+    //获取文章列表的ID
+    public static function getPushArticleIdList($app_id,$type_id)
+    {
+        $pushArticles=PushArticle::whereRaw('status = 0 and app_id = ? and type_id = ?',[$app_id,$type_id])->get()->toArray();
+        $ids=[];
+        foreach ($pushArticles as $pushArticle)
+        {
+            $ids[]=$pushArticle['article_id'];
+        }
+        return $ids;
+    }
+
+    //获取目录API
+    public static function newsGetDirectoriesApi()
+    {
+        $typeList= PushArticleType::select('id','pid','name')->get()->toArray();
+        return self::getArrays($typeList);
+    }
 }

@@ -56,7 +56,7 @@ return [
 
         'ArticleFace' => [
             'driver' => 'local',
-            'root' => storage_path('app/ArticleFace'),
+            'root' => public_path('app/ArticleFace'),
             'visibility' => 'public',
         ],
 

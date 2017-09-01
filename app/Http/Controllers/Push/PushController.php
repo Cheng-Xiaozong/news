@@ -78,6 +78,18 @@ class PushController extends Controller
             return redirect('/push/articleTypeSelect/'.$pid)->with('error','该分类下有子分类，不能删除！');
         }
 
+        $pushArticleType=$this->Push::getPushArticleType($id);
+        $idList=[];
+        foreach ($pushArticleType as $k=>$v)
+        {
+            $idList[$k]=$v['id'];
+        }
+        $idList=implode("、",$idList);
+        if(count($pushArticleType)>0)
+        {
+            return redirect('/push/articleTypeSelect/'.$pid)->with('error','该分类下有推送ID为【'.$idList.'】文章，不能删除，请至推送管理中删除对应文章后删除！');
+        }
+
         if($this->Push::deleteArticleType($id))
         {
             return redirect('/push/articleTypeSelect/'.$pid)->with('success','删除成功！');
@@ -103,7 +115,7 @@ class PushController extends Controller
                 return redirect()->back()->with('error','新增失败！');
             }
         }
-        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        $data['types']=$this->Push::getSubs($this->Push::pushEnabledArticleTypeList());
         return view('Push.addArticleType',$data);
     }
 
@@ -138,6 +150,12 @@ class PushController extends Controller
     //编辑文章分类状态
     public function editArticleTypeStatus($id,$pid)
     {
+        $types = $this->Push::pushArticleTypeList();
+        if($this->Push::sonNum($types,$id)!=0)
+        {
+            return redirect('/push/articleTypeSelect/'.$pid)->with('error','该分类下有子分类，不能禁用！');
+        }
+
         if($this->Push::editArticleTypeStatus($id))
         {
             return redirect('/push/articleTypeSelect/'.$pid)->with('success','操作成功！');
@@ -226,28 +244,11 @@ class PushController extends Controller
         ]);
     }
 
-   /* //推送管理
-    public function push()
-    {
-        $appList=$this->Push::appList();
-        foreach ($appList as $key=>$val)
-        {
-            $val->pushArticles=$this->Push::getArticlesByAppId($val->id);
-            $pushArticleIds=[];
-            foreach ($val->pushArticles as $pushArticle)
-            {
-                $pushArticleIds[]= $pushArticle->article_id;
-            }
-            $val->Articles=$this->Article::getArticleByIds($pushArticleIds);
-        }
-        $data['appList']=$appList;
-        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
-        return view('Push.index',$data);
-    }*/
-
      //推送管理
-     public function push($app_id=null,$type_id=null)
+     public function push(Request $request)
      {
+         $app_id=$request->input('app_id') ?? null;
+         $type_id=$request->input('type_id') ?? null;
          $data['articlePushList']=$this->selectPushData($app_id,$type_id);
          $data['appList']=$this->Push::appLists();
          $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
@@ -291,7 +292,6 @@ class PushController extends Controller
          return redirect('/article')->with('success','推送成功，请至【推送管理】中进行管理！');
      }
 
-     //---------------------------------
 
     //删除推送
     public function delete($id)

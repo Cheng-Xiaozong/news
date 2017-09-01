@@ -8,10 +8,10 @@
     {{--终端分类选择--}}
     <div class="am-u-sm-12 am-u-md-3">
         <div class="am-form-group">
-            <select  data-href="{{url('/push/articleTypeSelect')}}" data-index-href="{{url('/push/articleType')}}"  data-am-selected="{btnSize: 'sm'}">
-                <option value="null">请选择你的终端类型</option>
+            <select  data-href="{{url('/push')}}"   data-am-selected="{btnSize: 'sm'}" class="select-push" name="app-type">
+                <option value="null">请选择终端类型</option>
                 @foreach($appList as $app)
-                    <option value="{{$app->id}}">{{$app->name}}</option>
+                    <option {{isset($_GET['app_id']) && ($_GET['app_id']==$app->id) ? 'selected' : ''}} value="{{$app->id}}">{{$app->name}}</option>
                 @endforeach
             </select>
         </div>
@@ -19,10 +19,10 @@
     {{--文章分类选择--}}
     <div class="am-u-sm-12 am-u-md-3">
         <div class="am-form-group">
-            <select  data-href="{{url('/push/articleTypeSelect')}}" data-index-href="{{url('/push/articleType')}}"  data-am-selected="{btnSize: 'sm'}">
+            <select  data-href="{{url('/push')}}" data-am-selected="{btnSize: 'sm'}"  class="select-push" name="article-type">
                 <option value="null">请选择文章分类</option>
                 @foreach($types as $type)
-                    <option data-pid="{{$type['pid']}}" @if(explode('/',Request::getPathInfo())[count(explode('/',Request::getPathInfo()))-1] == $type['id']) selected @endif value="{{$type['id']}}" @if(!empty($type['sonNum'])) style="font-weight:bold;color:#000;" @endif>{{str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;',$type['level']-1).$type['name']}}</option>
+                    <option   @if(!empty($type['sonNum'])) style="font-weight:bold;color:#000;" disabled @endif {{isset($_GET['type_id']) && ($_GET['type_id']==$type['id']) ? 'selected' : ''}} value="{{$type['id']}}" @if(!empty($type['sonNum'])) style="font-weight:bold;color:#000;" @endif>{{str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;',$type['level']-1).$type['name']}}</option>
                 @endforeach
             </select>
         </div>

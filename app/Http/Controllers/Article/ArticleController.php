@@ -26,7 +26,7 @@ class ArticleController extends Controller
     {
         $data['articleList']=$this->Article::articleList();
         $data['articleTypeList']=$this->Article::articleTypeList();
-        $data['types']=$this->Push::getSubs($this->Push::pushArticleTypeList());
+        $data['types']=$this->Push::getSubs($this->Push::pushEnabledArticleTypeList());
         $data['appList']=$this->Push::appList();
         return view('Article.index',$data);
     }
