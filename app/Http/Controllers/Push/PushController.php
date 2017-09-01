@@ -168,7 +168,7 @@ class PushController extends Controller
     public function appList()
     {
         $data['appList']=$this->Push::appList();
-        return view('push.appList',$data);
+        return view('Push.appList',$data);
     }
 
     //编辑终端状态
@@ -226,7 +226,7 @@ class PushController extends Controller
                 return redirect()->back()->with('error','新增失败！');
             }
         }
-        return view('push.createApp');
+        return view('Push.createApp');
     }
 
     //验证数据
