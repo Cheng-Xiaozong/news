@@ -281,6 +281,12 @@ class PushService
         }
     }
 
+    //根据文章ID获取推送文章
+    public static function getPushByArticleId($article_id)
+    {
+        return PushArticle::where('article_id','=',$article_id)->select('article_id','id')->get()->toArray();
+    }
+
     //删除推送
     public static function delete($id)
     {

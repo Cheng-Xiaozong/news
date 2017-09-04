@@ -27,7 +27,8 @@ class ArticleService
     //查找文章
     public static function getArticleById($id)
     {
-        return Article::find($id);
+        $article=Article::find($id);
+        return $article;
     }
 
     //查找文章
@@ -140,7 +141,7 @@ class ArticleService
             if(file_exists($filePath) && !empty($article['face']))
             {
                 $articles[$key]['thumb']['md5']=md5_file($filePath);
-                $articles[$key]['thumb']['url']=$_SERVER['HTTP_HOST'].'/app/ArticleFace/'.$article['face'];
+                $articles[$key]['thumb']['url']='http://'.$_SERVER['HTTP_HOST'].'/app/ArticleFace/'.$article['face'];
             }else{
                 $articles[$key]['thumb']=null;
             }

@@ -19,6 +19,11 @@ class Article extends Model
     {
         $list = ArcitleType::lists('name','id');
         return $list[$value];
+    }
 
+    //文章封面处理
+    public function face($value)
+    {
+       return empty($value) ? 'http://'.$_SERVER['HTTP_HOST'].'/app/public/noImg.png' : 'http://'.$_SERVER['HTTP_HOST'].'/app/ArticleFace/'.$value;
     }
 }

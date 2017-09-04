@@ -50,11 +50,10 @@
                     <span class="am-form-caret"></span>
                 </div>
 
-
                 <div class="am-form-group">
                     <label class="am-form-label">文章封面：</label>
                     <input type="file" name="face" multiple>
-                     &nbsp;&nbsp;&nbsp;<a href=""><img src="{{$article->face}}" alt="当前封面" class="am-img-thumbnail" width="150px;"height="100px"></a>
+                     &nbsp;&nbsp;&nbsp;<a href=""><img src="{{$article->face($article->face)}}" alt="当前封面" class="am-img-thumbnail" style="width:150px;height:100px;"></a>
                 </div>
 
                 <div class="am-form-group">

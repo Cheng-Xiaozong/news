@@ -134,6 +134,19 @@ class ArticleController extends Controller
     //删除文章
     public function delete($id)
     {
+
+        $pushArticle = $this->Push::getPushByArticleId($id);
+        if(count($pushArticle)>0)
+        {
+            $idList=[];
+            foreach ($pushArticle as $k=>$v)
+            {
+                $idList[$k]=$v['id'];
+            }
+            $idList=implode("、",$idList);
+            return redirect('/article')->with('error','删除失败,因为ID为【'.$idList.'】的推送文章下正在使用该分类，请先更换对应ID文章的分类,或删除对应的推送文章后再进行删除！');
+        }
+
         if($this->Article::delete($id))
         {
             return redirect('/article')->with('success','删除成功！');
