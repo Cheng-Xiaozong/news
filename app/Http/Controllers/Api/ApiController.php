@@ -24,7 +24,6 @@ class ApiController extends Controller
         $this->Request=$request;
         $this->Action=$this->Request->input('act') ?? '';
         $this->PostData=$this->Request->input('JSON') ?? '';
-
     }
 
     //入口文件
@@ -50,13 +49,8 @@ class ApiController extends Controller
     //获取目录列表
     public function newsGetDirectories()
     {
-        if(isset($this->PostData['appId']))
-        {
-            $appId=$this->PostData['appId'];
-        }else{
-            return apiReturn(-3,'appId不能为空');
-        }
-
+        $this->postDataValidation();
+        $appId=$this->PostData['appId'];
         if(count($this->Push::getEnabledAppById($appId))==0)
         {
             return apiReturn(-1,'appId不存在，或者被禁用！');
@@ -73,12 +67,13 @@ class ApiController extends Controller
     //获取文章列表
     public function newsGetArticles()
     {
-        if(isset($this->PostData['appId'])&& isset($this->PostData['directoryId']))
+        $this->postDataValidation();
+        $appId=$this->PostData['appId'];
+        if(isset($this->PostData['directoryId']))
         {
-            $appId=$this->PostData['appId'];
             $directoryId=$this->PostData['directoryId'];
         }else{
-            return apiReturn(-3,'appId或directoryId不能为空');
+            return apiReturn(-3,'directoryId不能为空');
         }
 
         if(count($this->Push::getEnabledAppById($appId))==0)
@@ -103,12 +98,13 @@ class ApiController extends Controller
     //获取文章内容
     public function newsGetArticleContent()
     {
-        if(isset($this->PostData['appId'])&& isset($this->PostData['articleId']))
+        $this->postDataValidation();
+        $appId=$this->PostData['appId'];
+        if(isset($this->PostData['articleId']))
         {
-            $appId=$this->PostData['appId'];
             $articleId=$this->PostData['articleId'];
         }else{
-            return apiReturn(-3,'appId或directoryId不能为空');
+            return apiReturn(-3,'appId或articleId不能为空');
         }
 
         if(count($this->Push::getEnabledAppById($appId))==0)
@@ -125,6 +121,21 @@ class ApiController extends Controller
             return apiReturn(0,'获取成功！',$data);
         }else{
             return apiReturn(-3,'暂无数据！');
+        }
+    }
+
+    //参数处理
+    public function postDataValidation()
+    {
+        //解决客户端和网页请求带来的不同
+        if(is_string($this->PostData) && !empty($this->PostData))
+        {
+            $this->PostData=json_decode($this->PostData,true);
+        }
+        //判断appID
+        if(!isset($this->PostData['appId']))
+        {
+            return apiReturn(-4,'appId不能为空');
         }
     }
 
