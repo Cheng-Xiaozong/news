@@ -42,7 +42,7 @@ class ApiController extends Controller
                return $this->newsGetArticleContent();
                break;
            default:
-               return apiReturn(-1,'非法请求,请检查你的参数！');
+               return apiReturn(-1,'非法请求,请检查act参数！');
         }
     }
 
@@ -50,7 +50,13 @@ class ApiController extends Controller
     //获取目录列表
     public function newsGetDirectories()
     {
-        $appId=$this->PostData['appId'];
+        if(isset($this->PostData['appId']))
+        {
+            $appId=$this->PostData['appId'];
+        }else{
+            return apiReturn(-3,'appId不能为空');
+        }
+
         if(count($this->Push::getEnabledAppById($appId))==0)
         {
             return apiReturn(-1,'appId不存在，或者被禁用！');
@@ -67,8 +73,14 @@ class ApiController extends Controller
     //获取文章列表
     public function newsGetArticles()
     {
-        $appId=$this->PostData['appId'];
-        $directoryId=$this->PostData['directoryId'];
+        if(isset($this->PostData['appId'])&& isset($this->PostData['directoryId']))
+        {
+            $appId=$this->PostData['appId'];
+            $directoryId=$this->PostData['directoryId'];
+        }else{
+            return apiReturn(-3,'appId或directoryId不能为空');
+        }
+
         if(count($this->Push::getEnabledAppById($appId))==0)
         {
             return apiReturn(-1,'appId不存在，或者被禁用！');
@@ -91,8 +103,14 @@ class ApiController extends Controller
     //获取文章内容
     public function newsGetArticleContent()
     {
-        $appId=$this->PostData['appId'];
-        $articleId=$this->PostData['articleId'];
+        if(isset($this->PostData['appId'])&& isset($this->PostData['articleId']))
+        {
+            $appId=$this->PostData['appId'];
+            $articleId=$this->PostData['articleId'];
+        }else{
+            return apiReturn(-3,'appId或directoryId不能为空');
+        }
+
         if(count($this->Push::getEnabledAppById($appId))==0)
         {
             return apiReturn(-1,'appId不存在，或者被禁用！');
